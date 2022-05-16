@@ -14,6 +14,7 @@ const sessionController = async (req, res) => {
 
         if (!user) return res.status(403).send({ error: "User not exist" });
 
+        req.session.save()
         // user authorized successfully
         return res.json({
             success: true,
