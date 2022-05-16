@@ -23,7 +23,7 @@ var corsOptionsDelegate = function (req, callback) {
 };
 
 // security
-app.disable("x-powered-by");
+// app.disable("x-powered-by");
 env.config();
 // app.use(cors(corsOptionsDelegate));
 
@@ -31,6 +31,7 @@ app.use(
     cors({
         origin: allowlist,
         credentials: true,
+        methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
     })
 );
 app.use(helmet());
@@ -50,7 +51,7 @@ app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 //     sess.secure = true; // serve secure cookies
 //     sess.httpOnly = true;
 // }
-app.set("trust proxy", 1);
+// app.set("trust proxy", 1);
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
