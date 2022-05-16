@@ -6,8 +6,8 @@ const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
-const MongoStore = require("connect-mongo");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const dbConn = require("./db/dbConn");
 
 var allowlist = ["http://localhost:3000", "https://find-mentor.vercel.app"];
@@ -45,7 +45,8 @@ app.use(
         saveUninitialized: false,
         resave: false,
         store: MongoStore.create({
-            clientPromise: dbConn(),
+            // clientPromise: dbConn(),
+            mongoUrl: process.env.DB_CON,
             dbName: process.env.DB_NAME,
             crypto: {
                 secret: process.env.SESSION_CRYPTO_SECRET,
