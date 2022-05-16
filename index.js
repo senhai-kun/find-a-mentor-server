@@ -39,18 +39,18 @@ app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
 // session
-const sess = {
-    httpOnly: false,
-    maxAge: 7 * 24 * 3600 * 1000, // 1week session
-    secure: false,
-};
+// const sess = {
+//     httpOnly: false,
+//     maxAge: 7 * 24 * 3600 * 1000, // 1week session
+//     secure: false,
+// };
 
-if (app.get("env") === "production") {
-    app.set("trust proxy", 1); // trust first proxy
-    sess.secure = true; // serve secure cookies
-    sess.httpOnly = true;
-}
-
+// if (app.get("env") === "production") {
+//     app.set("trust proxy", 1); // trust first proxy
+//     sess.secure = true; // serve secure cookies
+//     sess.httpOnly = true;
+// }
+app.set("trust proxy", 1);
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
@@ -68,7 +68,11 @@ app.use(
             autoRemoveInterval: 10,
             ttl: 5 * 24 * 60 * 60,
         }),
-        cookie: sess,
+        cookie: {
+            httpOnly: true,
+            maxAge: 7 * 24 * 3600 * 1000, // 1week session
+            secure: true,
+        },
         // rolling: true,
     })
 );
