@@ -28,14 +28,15 @@ const loginController = async (req, res) => {
                 param: "password",
                 errorMsg: "Incorrect Password",
             });
-        console.log("user validated");
 
+        console.log("user validated");
+        // create new token
         const famID = await bcrypt.hash(
             user._id.toString(),
             parseInt(process.env.HASH)
         );
 
-        req.session.userID = user._id.toString();
+        req.session.userID = user._id;
 
         return res.json({ success: true, famID });
     } catch (e) {

@@ -6,8 +6,8 @@ const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
-const session = require("express-session");
 const MongoStore = require("connect-mongo");
+const session = require("express-session");
 const dbConn = require("./db/dbConn");
 
 var allowlist = ["http://localhost:3000", "https://find-mentor.vercel.app"];
@@ -38,6 +38,12 @@ const sess = {
     secure: false,
 };
 
+if (app.get("env") === "production") {
+    app.set("trust proxy", 1); // trust first proxy
+    sess.secure = true; // serve secure cookies
+    sess.httpOnly = true;
+}
+
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
@@ -59,12 +65,6 @@ app.use(
         // rolling: true,
     })
 );
-
-if (app.get("env") === "production") {
-    app.set("trust proxy", 1); // trust first proxy
-    sess.secure = true; // serve secure cookies
-    sess.httpOnly = true;
-}
 
 // api
 app.use(userRoutes);
