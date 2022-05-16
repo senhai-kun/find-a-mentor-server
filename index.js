@@ -58,17 +58,17 @@ app.use(
         name: process.env.SESSION_NAME,
         saveUninitialized: false,
         resave: false,
-        store: MongoStore.create({
-            // clientPromise: dbConn(),
-            mongoUrl: process.env.DB_CON,
-            dbName: process.env.DB_NAME,
-            crypto: {
-                secret: process.env.SESSION_CRYPTO_SECRET,
-            },
-            autoRemove: "interval",
-            autoRemoveInterval: 10,
-            ttl: 5 * 24 * 60 * 60,
-        }),
+        // store: MongoStore.create({
+        //     // clientPromise: dbConn(),
+        //     mongoUrl: process.env.DB_CON,
+        //     dbName: process.env.DB_NAME,
+        //     crypto: {
+        //         secret: process.env.SESSION_CRYPTO_SECRET,
+        //     },
+        //     autoRemove: "interval",
+        //     autoRemoveInterval: 10,
+        //     ttl: 5 * 24 * 60 * 60,
+        // }),
         cookie: {
             httpOnly: true,
             maxAge: 7 * 24 * 3600 * 1000, // 1week session
