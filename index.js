@@ -29,7 +29,7 @@ env.config();
 
 app.use(
     cors({
-        origin: allowlist,
+        origin: "https://find-mentor.vercel.app",
         credentials: true,
         methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
     })
@@ -51,12 +51,12 @@ app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 //     sess.secure = true; // serve secure cookies
 //     sess.httpOnly = true;
 // }
-// app.set("trust proxy", 1);
+app.set("trust proxy", 1);
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
         name: process.env.SESSION_NAME,
-        saveUninitialized: false,
+        saveUninitialized: true,
         resave: false,
         store: MongoStore.create({
             // clientPromise: dbConn(),
@@ -70,12 +70,12 @@ app.use(
             ttl: 5 * 24 * 60 * 60,
         }),
         cookie: {
-            httpOnly: false,
-            maxAge: 7 * 24 * 3600 * 1000, // 1week session
-            secure: false,
+            httpOnly: true,
+            maxAge: 604800000, // 1week session
+            secure: true,
             sameSite: "none"
         },
-        // rolling: true,
+        rolling: true,
     })
 );
 
