@@ -12,26 +12,14 @@ const dbConn = require("./db/dbConn");
 
 var allowlist = ["http://localhost:3000", "https://find-mentor.vercel.app"];
 
-var corsOptionsDelegate = function (req, callback) {
-    var corsOptions;
-    if (allowlist.indexOf(req.header("Origin")) !== -1) {
-        corsOptions = { origin: true, credentials: true }; // reflect (enable) the requested origin in the CORS response
-    } else {
-        corsOptions = { origin: false }; // disable CORS for this request
-    }
-    callback(null, corsOptions); // callback expects two parameters: error and options
-};
-
 // security
-// app.disable("x-powered-by");
+app.disable("x-powered-by");
 env.config();
-// app.use(cors(corsOptionsDelegate));
-
 app.use(
     cors({
         origin: "https://find-mentor.vercel.app",
         credentials: true,
-        methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
+        methods: ["POST", "GET"],
     })
 );
 app.use(helmet());
@@ -40,18 +28,19 @@ app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
 // session
-// const sess = {
-//     httpOnly: false,
-//     maxAge: 7 * 24 * 3600 * 1000, // 1week session
-//     secure: false,
-// };
+const sess = {
+    httpOnly: false,
+    maxAge: 7 * 24 * 3600 * 1000, // 1week session
+    secure: false,
+};
 
-// if (app.get("env") === "production") {
-//     app.set("trust proxy", 1); // trust first proxy
-//     sess.secure = true; // serve secure cookies
-//     sess.httpOnly = true;
-// }
-app.set("trust proxy", 1);
+if (app.get("env") === "production") {
+    app.set("trust proxy", 1); // trust first proxy
+    sess.secure = true; // serve secure cookies
+    sess.httpOnly = true;
+    sess.sameSite = "none";
+}
+
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
@@ -59,8 +48,7 @@ app.use(
         saveUninitialized: true,
         resave: false,
         store: MongoStore.create({
-            // clientPromise: dbConn(),
-            mongoUrl: process.env.DB_CON,
+            clientPromise: dbConn(),
             dbName: process.env.DB_NAME,
             crypto: {
                 secret: process.env.SESSION_CRYPTO_SECRET,
@@ -69,13 +57,7 @@ app.use(
             autoRemoveInterval: 10,
             ttl: 5 * 24 * 60 * 60,
         }),
-        cookie: {
-            httpOnly: true,
-            maxAge: 604800000, // 1week session
-            secure: true,
-            sameSite: "none"
-        },
-        rolling: true,
+        cookie: sess,
     })
 );
 

@@ -37,7 +37,6 @@ const loginController = async (req, res) => {
         );
 
         req.session.userID = user._id;
-        req.session.save();
 
         return res.json({ success: true, famID });
     } catch (e) {
