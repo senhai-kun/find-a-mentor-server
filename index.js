@@ -25,7 +25,14 @@ var corsOptionsDelegate = function (req, callback) {
 // security
 app.disable("x-powered-by");
 env.config();
-app.use(cors(corsOptionsDelegate));
+// app.use(cors(corsOptionsDelegate));
+
+app.use(
+    cors({
+        origin: allowlist,
+        credentials: true,
+    })
+);
 app.use(helmet());
 app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(express.json({ limit: "5mb" }));
