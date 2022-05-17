@@ -88,11 +88,13 @@ const registerController = async (req, res) => {
 };
 
 const logoutController = (req, res) => {
-    req.session.destroy();
     res.clearCookie(process.env.SESSION_NAME);
     console.log("logging out");
+    req.session.destroy((err) => {
+        if (err) console.log(err);
 
-    return res.json({ logout: true });
+        return res.json({ logout: true });
+    });
 };
 
 module.exports = {

@@ -45,7 +45,7 @@ app.use(
     session({
         secret: process.env.SESSION_SECRET,
         name: process.env.SESSION_NAME,
-        saveUninitialized: true,
+        saveUninitialized: false,
         resave: false,
         store: MongoStore.create({
             clientPromise: dbConn(),
