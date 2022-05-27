@@ -14,6 +14,7 @@ const userSchema = new Schema({
     password: { type: String, select: false, required: true, unique: true },
     ismentor: { type: Boolean, default: false },
     img: { type: String },
+    
 });
 
 module.exports = mongoose.model("users", userSchema);

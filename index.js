@@ -48,7 +48,8 @@ app.use(
         saveUninitialized: false,
         resave: false,
         store: MongoStore.create({
-            clientPromise: dbConn(),
+            // clientPromise: dbConn(),
+            mongoUrl: process.env.DB_CON,
             dbName: process.env.DB_NAME,
             crypto: {
                 secret: process.env.SESSION_CRYPTO_SECRET,

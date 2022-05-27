@@ -23,7 +23,7 @@ const registerSanitizer = [
     body("lastname")
         .notEmpty()
         .trim()
-        .isString()
+        .isString() 
         .toLowerCase()
         .withMessage("Invalid lastname"),
     body("email").trim().isEmail().normalizeEmail(),
