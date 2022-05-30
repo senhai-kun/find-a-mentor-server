@@ -36,9 +36,9 @@ const sess = {
 
 if (app.get("env") === "production") {
     app.set("trust proxy", 1); // trust first proxy
-    sess.secure = false; // serve secure cookies
-    sess.httpOnly = false;
-//     sess.sameSite = "none";
+    sess.secure = true; // serve secure cookies
+    sess.httpOnly = true;
+    sess.sameSite = "none";
 }
 
 app.use(
@@ -48,8 +48,8 @@ app.use(
         saveUninitialized: false,
         resave: false,
         store: MongoStore.create({
-            // clientPromise: dbConn(),
-            mongoUrl: process.env.DB_CON,
+            clientPromise: dbConn(),
+//             mongoUrl: process.env.DB_CON,
             dbName: process.env.DB_NAME,
             crypto: {
                 secret: process.env.SESSION_CRYPTO_SECRET,
