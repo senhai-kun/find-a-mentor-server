@@ -37,7 +37,7 @@ const sess = {
 if (app.get("env") === "production") {
     app.set("trust proxy", 1); // trust first proxy
     sess.secure = true; // serve secure cookies
-    sess.httpOnly = true;
+    sess.httpOnly = false;
     sess.sameSite = "none";
 }
 
