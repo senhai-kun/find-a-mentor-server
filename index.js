@@ -10,8 +10,6 @@ const MongoStore = require("connect-mongo");
 const session = require("express-session");
 const dbConn = require("./db/dbConn");
 
-var allowlist = ["http://localhost:3000", "https://find-mentor.vercel.app"];
-
 // security
 app.disable("x-powered-by");
 env.config();
@@ -48,8 +46,8 @@ app.use(
         saveUninitialized: false,
         resave: false,
         store: MongoStore.create({
-            clientPromise: dbConn(),
-//             mongoUrl: process.env.DB_CON,
+            // clientPromise: dbConn(),
+            mongoUrl: process.env.DB_CON,
             dbName: process.env.DB_NAME,
             crypto: {
                 secret: process.env.SESSION_CRYPTO_SECRET,
