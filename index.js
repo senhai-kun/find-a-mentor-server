@@ -17,7 +17,7 @@ app.disable("x-powered-by");
 env.config();
 app.use(
     cors({
-        origin: "https://find-mentor.vercel.app",
+        origin: process.env.ORIGIN.split(","),
         credentials: true,
         methods: ["POST", "GET"],
     })
