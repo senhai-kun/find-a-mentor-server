@@ -13,9 +13,9 @@ const getToken = (header) => {
 
 module.exports = async (req, res, next) => {
     const id = req.session?.userID;
+    console.log(id)
     if (!id) {
         // session invalid
-
         req.session.destroy();
         res.clearCookie(process.env.SESSION_NAME);
         return res.status(401).send({ error: "Unauthorized request" });

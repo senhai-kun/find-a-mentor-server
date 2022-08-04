@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 5000;
 const env = require("dotenv");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
@@ -9,10 +8,11 @@ const cookieParser = require("cookie-parser");
 const MongoStore = require("connect-mongo");
 const session = require("express-session");
 const dbConn = require("./db/dbConn");
+env.config();
+const port = process.env.PORT
 
 // security
 app.disable("x-powered-by");
-env.config();
 app.use(
     cors({
         origin: process.env.ORIGIN.split(","),
@@ -25,26 +25,27 @@ app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
+app.set("trust proxy", 1); // trust first proxy
+
 // session
 const sess = {
     httpOnly: false,
     maxAge: 7 * 24 * 3600 * 1000, // 1week session
     secure: false,
-    sameSite: "none"
+    sameSite: "lax"
 };
 
 if (app.get("env") === "production") {
-    app.set("trust proxy", 1); // trust first proxy
     sess.secure = true; // serve secure cookies
     sess.httpOnly = true;
-    sess.sameSite = "none";
+    sess.sameSite = "strict";
 }
 
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
         name: process.env.SESSION_NAME,
-        saveUninitialized: false,
+        saveUninitialized: true,
         resave: false,
         store: MongoStore.create({
             // clientPromise: dbConn(),
