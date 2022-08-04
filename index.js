@@ -25,7 +25,6 @@ app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
-app.set("trust proxy", 1); // trust first proxy
 
 // session
 const sess = {
@@ -36,9 +35,11 @@ const sess = {
 };
 
 if (app.get("env") === "production") {
+    app.set("trust proxy", 1); // trust first proxy
     sess.secure = true; // serve secure cookies
     sess.httpOnly = true;
     sess.sameSite = "strict";
+    sess.maxAge = 7 * 24 * 3600 * 1000; // 1week session
 }
 
 app.use(
