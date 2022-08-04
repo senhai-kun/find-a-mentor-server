@@ -15,7 +15,7 @@ const port = process.env.PORT
 app.disable("x-powered-by");
 app.use(
     cors({
-        origin: [process.env.ORIGIN],
+        origin: process.env.ORIGIN,
         credentials: true,
         methods: ["POST", "GET"],
     })
@@ -24,8 +24,6 @@ app.use(helmet());
 app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
-
-app.set("trust proxy", 1); // trust first proxy
 
 // session
 const sess = {
@@ -36,6 +34,7 @@ const sess = {
 };
 
 if (app.get("env") === "production") {
+    app.set("trust proxy", 1); // trust first proxy
     sess.secure = true; // serve secure cookies
     sess.httpOnly = true;
     sess.sameSite = "lax";
