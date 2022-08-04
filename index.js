@@ -30,7 +30,7 @@ const sess = {
     httpOnly: false,
     maxAge: 7 * 24 * 3600 * 1000, // 1week session
     secure: false,
-    sameSite: "lax"
+    sameSite: 'Lax'
 };
 
 if (app.get("env") === "production") {
