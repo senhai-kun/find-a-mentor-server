@@ -38,7 +38,7 @@ const sess = {
 if (app.get("env") === "production") {
     sess.secure = true; // serve secure cookies
     sess.httpOnly = true;
-    sess.sameSite = "strict";
+    sess.sameSite = "lax";
 }
 
 app.use(
