@@ -40,11 +40,6 @@ router.get("/account/logout", logoutController);
 
 router.post("/account/login", loginSanitizer, sanitizerResult, loginController);
 
-router.post(
-    "/account/register",
-    registerSanitizer,
-    sanitizerResult,
-    registerController
-);
+router.post("/account/register", registerSanitizer, sanitizerResult, registerController);
 
 module.exports = router;

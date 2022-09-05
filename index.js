@@ -30,13 +30,14 @@ const sess = {
     httpOnly: false,
     maxAge: 7 * 24 * 3600 * 1000, // 1week session
     secure: false,
-    sameSite: 'none'
+    sameSite: 'Lax'
 };
 
 if (app.get("env") === "production") {
     app.set("trust proxy", 1); // trust first proxy
     sess.secure = true; // serve secure cookies
     sess.httpOnly = true;
+    sess.sameSite = 'none';
     sess.maxAge = 7 * 24 * 3600 * 1000; // 1week session
 }
 
@@ -55,7 +56,8 @@ app.use(
             },
             autoRemove: "interval",
             autoRemoveInterval: 10,
-            ttl: 5 * 24 * 60 * 60,
+            // ttl: 5 * 24 * 60 * 60,
+            ttl: 20000
         }),
         cookie: sess,
     })
