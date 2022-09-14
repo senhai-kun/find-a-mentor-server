@@ -9,7 +9,7 @@ const sessionController = async (req, res) => {
 
         const id = req.session.userID;
 
-        console.log(req.session.userID)
+        console.log("session Controller: ",req.session.userID)
 
         // checks if a legitimate user
         const user = await checkUser({ _id: id });

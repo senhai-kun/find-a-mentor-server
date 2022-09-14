@@ -81,7 +81,7 @@ const registerController = async (req, res) => {
 
         req.session.userID = user._id;
 
-        return res.json({ success: true, famID });
+        return res.json({ success: true, famID, ismentor });
     } catch (e) {
         return res.status(422).json({ success: false, e });
     }

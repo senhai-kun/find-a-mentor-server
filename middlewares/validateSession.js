@@ -13,7 +13,7 @@ const getToken = (header) => {
 
 module.exports = async (req, res, next) => {
     const id = req.session?.userID;
-    console.log(id)
+    console.log("validateSession: ",id)
     if (!id) {
         // session invalid
         req.session.destroy();

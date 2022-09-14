@@ -14,7 +14,37 @@ const userSchema = new Schema({
     password: { type: String, select: false, required: true, unique: true },
     ismentor: { type: Boolean, default: false },
     img: { type: String },
-    
 });
+
+const mentee = new Schema({
+    _id: {
+        select: false,
+        type: ObjectId,
+        default: mongoose.Types.ObjectId,
+    },
+    firstname: { type: String, required: true },
+    lastname: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, select: false, required: true, unique: true },
+    img: { type: String },
+})
+
+const mentor = new Schema({
+    _id: {
+        select: false,
+        type: ObjectId,
+        default: mongoose.Types.ObjectId,
+    },
+    firstname: { type: String, required: true },
+    lastname: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, select: false, required: true, unique: true },
+    img: { type: String },
+    details: { 
+        field: String,
+        skills: Array,
+        about: String
+    }
+})
 
 module.exports = mongoose.model("users", userSchema);
