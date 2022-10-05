@@ -1,7 +1,8 @@
 const dbConn = require("../db/dbConn");
-const User = require("../db/model");
+const { User, UsersAccount, Mentee, Mentor } = require("../db/model");
 const bcrypt = require("bcrypt");
 const checkUser = require("../helper/checkUser");
+const shortid = require("shortid");
 
 const loginController = async (req, res) => {
     await dbConn(); // initialize db connection
@@ -10,7 +11,7 @@ const loginController = async (req, res) => {
         const { email, password } = req.body;
 
         console.log("find user");
-        const user = await User.findOne({ email }).select("+password +_id");
+        const user = await UsersAccount.findOne({ email }).select("+password +_id");
 
         if (!user)
             return res.status(422).json({
@@ -53,9 +54,13 @@ const registerController = async (req, res) => {
 
     try {
         console.log("Adding user...");
+        // setup shortid 
+        shortid.characters(process.env.SHORTID);
+        const ref_id = shortid.generate();
 
         // check if email exists
-        const exist = await checkUser({ email });
+        // const exist = await checkUser({ email });
+        const exist = await UsersAccount.findOne({ email });
         if (exist)
             return res.status(422).json({ email: "Account already exists!" });
 
@@ -64,24 +69,62 @@ const registerController = async (req, res) => {
             parseInt(process.env.HASH)
         );
 
-        const user = await new User({
-            firstname,
-            lastname,
-            email,
-            password: encryptPass,
-            ismentor,
-        }).save();
+        if ( ismentor ) {
+            await new Mentor({
+                firstname,
+                lastname,
+                email,
+                ref_id
+            }).save( async (err, result) => {
+                if (!err) {
+                    await UsersAccount({
+                        _id: result._id,
+                        email,
+                        password: encryptPass,
+                        accountType: "mentor"
+                    }).save();
 
-        const famID = await bcrypt.hash(
-            String(user._id),
-            parseInt(process.env.HASH)
-        );
+                    const famID = await bcrypt.hash(
+                        String(result._id),
+                        parseInt(process.env.HASH)
+                    );
+            
+                    console.log("User successfully added...");
+            
+                    req.session.userID = result._id;
+                    
+                    return res.json({ success: true, famID, ismentor });
+                }
+            })
+        } else {
+            await new Mentee({
+                firstname,
+                lastname,
+                email,
+                ref_id
+            }).save( async (err, result) => {
+                if (!err) {
+                    await UsersAccount({
+                        _id: result._id,
+                        email,
+                        password: encryptPass,
+                        accountType: "mentee"
+                    }).save();
 
-        console.log("User successfully added...");
-
-        req.session.userID = user._id;
-
-        return res.json({ success: true, famID, ismentor });
+                    const famID = await bcrypt.hash(
+                        String(result._id),
+                        parseInt(process.env.HASH)
+                    );
+            
+                    console.log("User successfully added...");
+            
+                    req.session.userID = result._id;
+                    
+                    return res.json({ success: true, famID, ismentor });
+                }
+            })
+        }
+        
     } catch (e) {
         return res.status(422).json({ success: false, e });
     }
@@ -90,7 +133,7 @@ const registerController = async (req, res) => {
 const logoutController = (req, res) => {
     res.clearCookie("fam-ses", { path: '/' });
     console.log("logging out");
-    req.session.destroy();
+    // req.session.destroy();
     return res.json({ logout: "true" });
 };
 
