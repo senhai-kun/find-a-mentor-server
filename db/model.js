@@ -36,7 +36,6 @@ const menteeSchema = new Schema({
     _id: {
         type: Schema.Types.ObjectId,
         default: mongoose.Types.ObjectId,
-        // select: false,
     },
     firstname: { type: String },
     lastname: { type: String },
@@ -53,7 +52,6 @@ const mentorSchema = new Schema({
     _id: {
         type: Schema.Types.ObjectId,
         default: mongoose.Types.ObjectId,
-        // select: false,
     },
     firstname: { type: String },
     lastname: { type: String },
@@ -62,7 +60,20 @@ const mentorSchema = new Schema({
     details: { 
         skills: { type: Array },
         about: { type: String },
-        ratings: { type: Number, default: 0 }
+        rating: {
+            rate: {
+                type: Number,
+                default: 0
+            },
+            rated: {
+                type: Boolean,
+                default: false
+            },
+            total_count: {
+                type: Number,
+                default: 0
+            }
+        }
     },
     profession: { type: String },
     ref_id: { type: String },
@@ -85,10 +96,12 @@ const mentoringListSchema = new Schema({
                 ref: 'mentee',
                 required: true
             },
-            schedule: {
-                type: Schema.Types.ObjectId,
-                ref: "schedule"
-            }
+            schedule: [{
+                _id: {
+                    type: Schema.Types.ObjectId,
+                    ref: "schedule"
+                }
+            }]
         }
     ]
     
@@ -107,15 +120,23 @@ const scheduleSchema = new Schema({
         type: String,
         required: true
     },
-    mentee: {
-        _id: {
-            type: Schema.Types.ObjectId,
-            ref: 'mentee',
-        },
-    },
     approved: {
         type: Boolean,
         default: false
+    },
+    done: {
+        type: Boolean,
+        default: false
+    },
+    rating: {
+        rate: {
+            type: Number,
+            default: 0
+        },
+        rated: {
+            type: Boolean,
+            default: false
+        }
     }
 })
 

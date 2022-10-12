@@ -85,7 +85,7 @@ const approveSchedule = async (req, res) => {
 
         await dbConn();
 
-        const sched = await Schedule.findOneAndUpdate({ _id: sched_id }, { $set: { approved: true } }, { new: true });
+        const sched = await Schedule.findOneAndUpdate({ _id: sched_id }, { $set: { approved: true } }, { new: true, upsert: true });
 
         return res.json(sched);
         
@@ -94,10 +94,32 @@ const approveSchedule = async (req, res) => {
     }
 }
 
+const rateMentor = async (req, res) => {
+    const { sched_id, rate, mentor_id } = req.body
+
+    try {
+        await dbConn();
+        
+        const sched = await Schedule.findOneAndUpdate({ _id: sched_id }, { $set: { rating: { rated: true, rate: rate } } }, { new: true });
+
+
+        // mentor table ** dapat percentage na ng rating ang andito
+        //  $set: { details: { rating: { rate: sched.rating.rate } } }
+        const mentor = await Mentor.findOneAndUpdate({ _id: mentor_id }, { $set: { "details.rating.rate": sched.rating.rate } }, { new: true });
+
+        return res.json({ success: true, msg: "Rate submitted!" })
+
+
+    } catch (error) {
+        return res.status(500).json({ success: false, msg: "Mentor not rated", error: "Server Error", error })
+    }
+}
+
 
 module.exports = { 
     enrollMentee,
     getMentor,
     checkIfEnrolled,
-    approveSchedule
+    approveSchedule,
+    rateMentor
 }

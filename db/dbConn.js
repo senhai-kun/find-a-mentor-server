@@ -26,7 +26,7 @@ const dbConn = async () => {
             console.log("failed connecting to database", e);
         });
 
-    cacheConn = conn;
+    // cacheConn = conn;
     return conn;
 };
 

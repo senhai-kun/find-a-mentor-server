@@ -16,7 +16,7 @@ const find = async (req, res) => {
         // }
         
         // return res.json(user);
-        const sched = await MentoringList.findOne({ _id: "633d4df64f80672a430adf4d" })
+        const sched = await MentoringList.find({ "mentee._id": "633d4ab24f80672a430aded3" }).populate("mentee.schedule._id")
 
         return res.json(sched)
 
@@ -329,13 +329,14 @@ const getUserProfile = async (req, res) => {
         if (ismentor) {
             const user = await Mentor.findOne({ ref_id });
 
-            const mentor = await MentoringList.findOne({ _id: user._id }).populate("_id").populate("mentee._id");
-
+            const mentor = await MentoringList.findOne({ _id: user._id }).populate("_id").populate("mentee._id").populate("mentee.schedule._id");
+            
             return res.json({ ismentor, mentor });
         } else {
             const user = await Mentee.findOne({ ref_id });
 
-            const mentee = await MentoringList.findOne({ "mentee._id": user._id }).populate("_id").populate("mentee._id");
+            const mentee = await MentoringList.find({ "mentee._id": user._id }).populate("_id").populate("mentee._id").populate("mentee.schedule._id");
+            // console.log("mentee", mentee)
 
             return res.json({ ismentor, mentee });
         }

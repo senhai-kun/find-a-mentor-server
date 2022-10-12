@@ -61,8 +61,7 @@ const registerController = async (req, res) => {
         // check if email exists
         // const exist = await checkUser({ email });
         const exist = await UsersAccount.findOne({ email });
-        if (exist)
-            return res.status(422).json({ email: "Account already exists!" });
+        if (exist) return res.status(422).json({ email: "Account already exists!" });
 
         const encryptPass = await bcrypt.hash(
             password,

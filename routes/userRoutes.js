@@ -17,8 +17,8 @@ const {
     updateUserProfile,
     getUserProfile
 } = require("../controller/userController");
-const { getAllMentors, getMentorProfile, updateMentorProfile, getSchedule, addSchedule } = require("../controller/mentorController");
-const { enrollMentee, getMentor, checkIfEnrolled, approveSchedule } = require("../controller/menteeController");
+const { getAllMentors, getMentorProfile, updateMentorProfile, getSchedule, addSchedule, doneSchedule } = require("../controller/mentorController");
+const { enrollMentee, getMentor, checkIfEnrolled, approveSchedule, rateMentor } = require("../controller/menteeController");
 
 // routes
 router.get("/", (req, res) => {
@@ -31,11 +31,13 @@ router.get("/mentors", getAllMentors);
 router.get("/mentor/:ref_id", getMentorProfile);
 router.get("/mentor/schedule/list", getSchedule);
 router.post("/mentor/schedule", addSchedule);
+router.get("/mentor/schedule/done/:sched_id", doneSchedule);
 
 router.get("/mentee/mentor", getMentor);
 router.post("/mentee/schedule/approved", validateSession, approveSchedule);
 router.get("/mentee/:mentee_ref_id/mentor/:mentor_ref_id/enrolled", checkIfEnrolled);
 router.post("/mentee/enroll", validateSession, enrollMentee);
+router.post("/mentee/rate", validateSession, rateMentor);
 
 router.post("/user/:ref_id", validateSession, getUserProfile);
 
