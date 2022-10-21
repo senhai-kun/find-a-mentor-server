@@ -66,13 +66,13 @@ app.use(
 app.use(userRoutes);
 
 // socket io
-const server = http.createServer(app);
-const socketInit = require("./chat/socketInit")(server)
+//const server = http.createServer(app);
+//const socketInit = require("./chat/socketInit")(server)
 
 // initialize socket io
-app.use(socketInit);
+// app.use(socketInit);
 
 // server
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
