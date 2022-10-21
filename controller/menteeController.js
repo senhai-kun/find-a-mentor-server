@@ -25,6 +25,8 @@ const enrollMentee = async (req, res) => {
 
         const mentor = await Mentor.findOne({ ref_id }).select("+_id");
 
+        if (!mentor) return res.status(400).json({ error: "Mentor not found!" });
+
         // const existsOnList = await MentoringList.findOne({ _id: mentor._id });
 
         // if ( existsOnList ) {
@@ -102,12 +104,32 @@ const rateMentor = async (req, res) => {
         
         const sched = await Schedule.findOneAndUpdate({ _id: sched_id }, { $set: { rating: { rated: true, rate: rate } } }, { new: true });
 
+        const mentor = await Mentor.findOne({ _id: mentor_id });
+
+        if( !mentor ) return res.status(400).json({ error: "Mentor not found!" });
+
+        if( !mentor.details.rating.rated ) {
+            // first ratings
+            const rated = await Mentor.findOneAndUpdate({ _id: mentor_id }, { $set: { "details.rating.rate": sched.rating.rate, "details.rating.rated": true, "details.rating.total_count": 1 } }, { new: true });
+            if(!rated) return res.json({ success: false, error: rated, msg: "Error on first rating query." });
+
+            return res.json({ success: true, msg: "Rate submitted!" })
+        } else {
+            // increment ratings
+            const totalsum = Number(mentor.details.rating.rate) + Number(rate);
+            const avg = totalsum / 2;
+
+            const rated = await Mentor.findOneAndUpdate({ _id: mentor_id }, { $set: { "details.rating.rate": avg }, $inc: { "details.rating.total_count": 1 } }, { new: true });
+            if(!rated) return res.json({ success: false, error: rated, msg: "Error on first rating query." });
+
+            return res.json({ success: true, msg: "Rate submitted!" })
+        }
 
         // mentor table ** dapat percentage na ng rating ang andito
         //  $set: { details: { rating: { rate: sched.rating.rate } } }
-        const mentor = await Mentor.findOneAndUpdate({ _id: mentor_id }, { $set: { "details.rating.rate": sched.rating.rate } }, { new: true });
+        // const rated = await Mentor.findOneAndUpdate({ _id: mentor_id }, { $set: { "details.rating.rate": sched.rating.rate } }, { new: true });
 
-        return res.json({ success: true, msg: "Rate submitted!" })
+        // return res.json({ success: true, msg: "Rate submitted!" })
 
 
     } catch (error) {

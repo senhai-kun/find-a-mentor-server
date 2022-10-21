@@ -2,20 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
-const userSchema = new Schema({
-    _id: {
-        select: false,
-        type: ObjectId,
-        default: mongoose.Types.ObjectId,
-    },
-    firstname: { type: String, required: true },
-    lastname: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, select: false, required: true, unique: true },
-    ismentor: { type: Boolean, default: false },
-    img: { type: String },
-});
-
 const usersAccount = new Schema({
     _id: {
         type: ObjectId,
@@ -44,7 +30,8 @@ const menteeSchema = new Schema({
     ref_id: { type: String },
     coordinates: { 
         lng: Number,
-        lat: Number
+        lat: Number,
+        address: String
     }
 })
 
@@ -79,7 +66,8 @@ const mentorSchema = new Schema({
     ref_id: { type: String },
     coordinates: { 
         lat: Number,
-        lng: Number
+        lng: Number,
+        address: String
     }
 })
 
@@ -104,7 +92,6 @@ const mentoringListSchema = new Schema({
             }]
         }
     ]
-    
 })
 
 const scheduleSchema = new Schema({
@@ -140,11 +127,48 @@ const scheduleSchema = new Schema({
     }
 })
 
-const User = mongoose.model("users", userSchema);
+const chatRoomSchema = new Schema({
+    _id: {
+        type: Schema.Types.ObjectId,
+        default: mongoose.Types.ObjectId,
+    },
+    mentor: {
+        type: Schema.Types.ObjectId,
+        ref: "mentor"
+    },
+    members: [{
+        _id: {
+            type: Schema.Types.ObjectId,
+            ref: "mentee"
+        }
+    }],
+    groupChatName: {
+        type: String
+    }
+}, { timestamps: true })
+
+const messageSchema = new Schema({
+    _id: {
+        type: Schema.Types.ObjectId,
+        default: mongoose.Types.ObjectId,
+    },
+    message: {
+        type: String,
+        required: true
+    },
+    sender: {
+        type: Schema.Types.ObjectId,
+        ref: "mentee"
+    },
+    to: {
+        type: String
+    }
+}, { timestamps: true })
+
 const UsersAccount = mongoose.model("users_account", usersAccount, "users_account");
 const Mentee = mongoose.model("mentee", menteeSchema, "mentee");
 const Mentor = mongoose.model("mentor", mentorSchema, "mentor");
 const MentoringList = mongoose.model("mentoring_list", mentoringListSchema, "mentoring_list");
 const Schedule = mongoose.model("schedule", scheduleSchema, "schedule");
 
-module.exports = { User, Mentee, Mentor, UsersAccount, MentoringList, Schedule };
+module.exports = { Mentee, Mentor, UsersAccount, MentoringList, Schedule };

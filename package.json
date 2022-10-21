@@ -23,7 +23,9 @@
     "helmet": "^5.0.2",
     "moment-timezone": "^0.5.37",
     "mongoose": "^6.2.9",
-    "shortid": "^2.2.16"
+    "nodemailer": "^6.8.0",
+    "shortid": "^2.2.16",
+    "socket.io": "^4.5.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"

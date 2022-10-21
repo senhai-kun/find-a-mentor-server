@@ -8,18 +8,18 @@ const cookieParser = require("cookie-parser");
 const MongoStore = require("connect-mongo");
 const session = require("express-session");
 const dbConn = require("./db/dbConn");
+const http = require("http");
 env.config();
+
 const port = process.env.PORT;
 
 // security
 app.disable("x-powered-by");
-app.use(
-    cors({
-        origin: process.env.ORIGIN,
-        credentials: true,
-        methods: ["POST", "GET"],
-    })
-);
+app.use(cors({
+    origin: process.env.ORIGIN,
+    credentials: true,
+    methods: ["POST", "GET"],
+}));
 app.use(helmet());
 app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(express.json({ limit: "5mb" }));
@@ -62,13 +62,17 @@ app.use(
     })
 );
 
-// const moment = require("moment-timezone");
-// console.log(moment.tz(moment(), 'Asia/Manila').format());
-
-// api
+// user api
 app.use(userRoutes);
 
+// socket io
+const server = http.createServer(app);
+const socketInit = require("./chat/socketInit")(server)
+
+// initialize socket io
+app.use(socketInit);
+
 // server
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });

@@ -1,6 +1,6 @@
 const dbConn = require("../db/dbConn");
 const mongoose = require("mongoose");
-const {  UsersAccount, Mentor, Schedule, MentoringList, Mentee } = require("../db/model");
+const { UsersAccount, Mentor, Schedule, MentoringList, Mentee } = require("../db/model");
 
 const getAllMentors = async (req, res) => {
     try {
@@ -9,12 +9,33 @@ const getAllMentors = async (req, res) => {
         const mentors = await Mentor.find({
             "profession": { $exists: true },
             "details.about": { $exists: true }
-        })
+        }).sort({ "details.rating.rate": -1 })
 
         return res.json({ mentors })
 
     } catch (error) {
         return res.status(500).json({ error: "Server Error", error })
+    }
+}
+
+const searchMentor = async (req, res) => {
+    const { query } = req.query
+    
+    try {
+        await dbConn();
+
+        const mentors = await Mentor.find({ 
+            $or: [
+                { "firstname": { $regex: query, $options: "i" } }, 
+                { "lastname": { $regex: query, $options: "i" } }, 
+                { "profession": { $regex: query, $options: "i" } }, 
+                { "details.skills": { $regex: query, $options: "i" } }
+            ] }).sort({ "details.rating.rate": -1 })
+
+        return res.json({mentors})
+
+    } catch (error) {
+        return res.status(500).json({ msg: "Server error from mentor search", error });
     }
 }
 
@@ -141,5 +162,4 @@ const doneSchedule = async (req, res) => {
 }
 
 
-
-module.exports = { getAllMentors, getMentorProfile, updateMentorProfile, getSchedule, addSchedule, doneSchedule }
+module.exports = { getAllMentors, getMentorProfile, updateMentorProfile, getSchedule, addSchedule, doneSchedule, searchMentor }

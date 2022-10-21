@@ -15,9 +15,10 @@ const {
     profileImgController,
     find,
     updateUserProfile,
-    getUserProfile
+    getUserProfile,
+    sendEmail
 } = require("../controller/userController");
-const { getAllMentors, getMentorProfile, updateMentorProfile, getSchedule, addSchedule, doneSchedule } = require("../controller/mentorController");
+const { getAllMentors, getMentorProfile, updateMentorProfile, getSchedule, addSchedule, doneSchedule, searchMentor } = require("../controller/mentorController");
 const { enrollMentee, getMentor, checkIfEnrolled, approveSchedule, rateMentor } = require("../controller/menteeController");
 
 // routes
@@ -27,6 +28,8 @@ router.get("/", (req, res) => {
 
 router.get("/find", find);
 router.get("/mentors", getAllMentors);
+router.get("/search/mentor", searchMentor);
+router.post("/email", sendEmail);
 
 router.get("/mentor/:ref_id", getMentorProfile);
 router.get("/mentor/schedule/list", getSchedule);

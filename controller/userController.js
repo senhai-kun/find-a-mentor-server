@@ -1,149 +1,45 @@
 const dbConn = require("../db/dbConn");
 const checkUser = require("../helper/checkUser");
 const { cloudinary } = require("../helper/cloudinary");
-const { User, UsersAccount, Mentee, Mentor, MentoringList, Schedule } = require("../db/model");
+const { UsersAccount, Mentee, Mentor, MentoringList, Schedule } = require("../db/model");
 const mongoose = require("mongoose");
+const sendMail = require("../sendmail/sendMail");
 
 const find = async (req, res) => {
-    await dbConn();
+    
+    let result = await sendMail({ subject: "Mentor: Senpai Kouhai", from: "Find A Mentor <asdsenpaikouhai04@gmail.com>", cc: "senpaikouhai04@gmail.com", to: "agustinagapito09@gmail.com" })
+
+    return res.json({ result })
+
+    // const users = await UsersAccount.find().select("+password");
+    // const mentor = await Mentor.find();
+    // const mentee = await Mentee.find();
+    // const mentoringList = await MentoringList.find();
+    // const schedule = await Schedule.find();
+
+    // return res.json({ users, mentor, mentee, mentoringList, schedule })
+
     // try {
+        // await dbConn();
+
+        // const text = "thre";
+
+        // const mentor = await Mentor.find({ $or: [{ "firstname": { $regex: text } }, { "lastname": { $regex: text } }, { "profession": { $regex: text } }] })
+
+        // return res.json({mentor})
         
-        // const user_data = await UsersAccount.findOne({ _id: "6336d82c6c37e462b25b0b7a" }).populate("_id");
-
-        // const user = {
-        //     ...user_data._doc._id.toObject(),
-        //     ismentor: user_data.accountType === "mentor" && true,
-        // }
-        
-        // return res.json(user);
-        const sched = await MentoringList.find({ "mentee._id": "633d4ab24f80672a430aded3" }).populate("mentee.schedule._id")
-
-        return res.json(sched)
-
-        // const user = await MentoringList.findOne({ _id: "6336d3bfe8cc63d0b7d3c6aa"}).populate("mentee._id").populate("mentee.schedule");
-
-        // return res.json(user)
-
-        // const user = await MentoringList.findOneAndUpdate({ _id: "6336d3bfe8cc63d0b7d3c6aa", "mentee._id": "6336d82c6c37e462b25b0b7a" }, { $set: { "mentee.$.schedule": "633a38c9c83e9a198d26273e" } }, {new: true})
-        // return res.json(user)
-
-        // .populate("_id")
-        // .populate("mentee._id")
-        
-        // .exec( async (err, doc) => {
-        //     await console.log("Populated User: " + doc);
-        // } )
-        // .then( doc => {
-        //     return res.json(doc)
-        // } )
-        // .catch( e => {
-        //     return res.json(e)
-        // })
-
-        // let user = {
-        //     ...user
-        // }
-
-       
-
-        // const agg = await UsersAccount.aggregate([
-        //     {
-        //         $lookup: {
-        //             from: "mentors",
-        //             localField: "email",
-        //             foreignField: "email",
-        //             as: "mentor",
-        //         }
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: "mentees",
-        //             localField: "email",
-        //             foreignField: "email",
-        //             as: "mentee",
-        //         }
-        //     },
-        //     { 
-        //         $match: { _id: mongoose.Types.ObjectId("632a7f239a848312a615888a"), ref_id: "6ydkqIp5d" }
-        //     },
-        //     { 
-        //         $project: { 
-        //             ismentor: { $cond: { if: {$eq: ["$mentor", []]}, then: false, else: true  } },
-        //             user: { $concatArrays: ["$mentor", "$mentee"] }, 
-        //             "ref_id": 1,
-        //             "email": 1
-        //         } 
-        //     },
-        // ])
-
-        // const agg = await MentoringList.aggregate([
-        //     {
-        //         $lookup: {
-        //             from: "mentor",
-        //             localField: "mentee_list",
-        //             foreignField: "mentee_list",
-        //             as: "mentor",
-        //         }
-        //     },
-        //     // {
-        //     //     $lookup: {
-        //     //         from: "mentee",
-        //     //         localField: "mentor_list",
-        //     //         foreignField: "mentee",
-        //     //         as: "mentee",
-        //     //     }
-        //     // },
-        //     // {
-        //     //     $unwind: "$mentor"
-        //     // },
-        //     {
-        //         $lookup: {
-        //             from: "mentoring_list",
-        //             localField: "mentee_list",
-        //             foreignField: "mentee_list",
-        //             as: "list"
-        //         }
-        //     },
-        //     // {
-        //     //     $match: {
-        //     //         "mentor.mentee_list": "mentoring_lists._id"
-        //     //     }
-        //     // }
-        //     // { 
-        //     //     $project: { 
-        //     //         ismentor: { $cond: { if: {$eq: ["$mentor", []]}, then: false, else: true  } },
-        //     //         user: { $concatArrays: ["$mentor", "$mentee"] }, 
-        //     //         "ref_id": 1,
-        //     //         "email": 1
-        //     //     } 
-        //     // },
-        // ])
-
-        // return res.json(agg)
-
-        // await Mentee.find().populate({path: "mentor_list", model: "mentoring_list"}).exec( (err, user) => {
-        //     if (err) return res.json(err)
-        //     return res.json(user);
-        // } )
-
-        // await Mentor.findOne({ _id: "632f9bb5118ef7614a66db72" })
-        // .populate({path: "mentee_list", model: "mentoring_list" })
-        // .exec( (err, user) => {
-        //     if (err) console.log(err);
-        //     return res.json(user);
-        // } )
-
-        // await MentoringList.find().populate({ path: "_id", model: "mentor" }).exec( (err, user) => {
-        //     if (err) return res.json(err);
-        //     return res.json(user);
-        // } )
-        // const agg = await Mentee.find().populate("")
-
-        // return res.json({ agg });
-        
-    // } catch (e) {
-    //     return res.json({e})
+    // } catch (error) {
+    //     return res.json({ error })
     // }
+
+}
+
+const sendEmail = async (req, res) => {
+    const { from, to, mentor, text } = req.body;
+    let result = await sendMail({ subject: `Mentor: ${mentor}`, from: `Find A Mentor <${from}>`, cc: to, to: to, text: text });
+
+    return res.json(result);
+
 }
 
 const sessionController = async (req, res) => {
@@ -153,11 +49,6 @@ const sessionController = async (req, res) => {
         const id = req.session.userID;
 
         console.log("session Controller: ",req.session.userID)
-
-        // checks if a legitimate user
-        // const exist = await UsersAccount.findOne({ _id: id });
-
-        // if (!exist) return res.status(403).send({ error: "User not exist" });
 
         const user_data = await UsersAccount.findOne({ _id: id }).populate({ path: "_id", select: "-_id"});
 
@@ -248,7 +139,7 @@ const profileImgController = async (req, res) => {
 const updateUserProfile = async (req, res) => {
     const { ismentor, img, firstname, lastname, location, ref_id } = req.body;
     const id = req.session.userID;
-    console.log(location, firstname, lastname, location, ref_id);
+    console.log( firstname, lastname, location, ref_id);
 
     try {
         await dbConn();
@@ -261,7 +152,7 @@ const updateUserProfile = async (req, res) => {
                         lastname,
                         coordinates: location,
                     }
-                }, { new: true, upsert: true });
+                }, { new: true });
 
                 return res.json({ success: true, user});
             }
@@ -278,7 +169,7 @@ const updateUserProfile = async (req, res) => {
                     coordinates: location,
                     img: `https://res.cloudinary.com/find-a-mentor/v1/${upload.public_id}`,
                 }
-            }, { new: true, upsert: true });
+            }, { new: true });
 
             return res.json({ success: true, user});
         } else {
@@ -289,7 +180,7 @@ const updateUserProfile = async (req, res) => {
                         lastname,
                         coordinates: location,
                     }
-                }, { new: true, upsert: true });
+                }, { new: true});
 
                 return res.json({ success: true, user});
             }
@@ -306,7 +197,7 @@ const updateUserProfile = async (req, res) => {
                     coordinates: location,
                     img: `https://res.cloudinary.com/find-a-mentor/v1/${upload.public_id}`,
                 }
-            }, { new: true, upsert: true });
+            }, { new: true });
 
             return res.json({ success: true, user});
         }
@@ -352,5 +243,6 @@ module.exports = {
     profileImgController,
     find,
     updateUserProfile,
-    getUserProfile
+    getUserProfile,
+    sendEmail
 };
