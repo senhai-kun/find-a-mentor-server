@@ -67,7 +67,7 @@ const getSchedule = async (req, res) => {
     try {
         // await dbConn();
 
-        const sched = await MentoringList.findOne({ "mentee._id": id }).populate("_id").populate("mentee._id").populate("mentee.schedule");
+        const sched = await MentoringList.findOne({ "mentee._id": id }).populate("_id").populate("mentee._id").populate({ path: "mentee.schedule", options: { sort: {"mentee.schedule.approved": 1} } });
         
         if (!sched) return res.json({ msg: "schedule not found" })
 
@@ -82,27 +82,46 @@ const getSchedule = async (req, res) => {
 const addSchedule = async (req, res) => {
     const { from, to, email } = req.body;
 
-    const id = req.session.userID; // should be mentor id from session
+    const ses_id = req.session.userID; // should be mentor id from session
 
     try {
         await dbConn();
 
         const mentee = await Mentee.findOne({ email });
+        // const mentor = await Mentor.findOne({ _id: id });
         
         // const sched = await Schedule.findOneAndUpdate({ mentee: mentee._id }, { $set: { from: from, to: to } }, { new: true, upsert: true });
 
-        await Schedule({
-            from,
-            to
-        }).save( async (err, doc) => {
-            if( err ) return res.status(400).json({ success: false, error: err, msg: "Schedule not added!" })
+        // check if schedule overlaps
+        const sameSched = await Schedule.findOne({ from, to });
 
-            const list = await MentoringList.findOneAndUpdate({ _id: id, "mentee._id": mentee._id }, { $push: { "mentee.$.schedule": [{ _id: doc._id }] } }, {new: true, upsert: true})
+        if(sameSched) {
+            // check if it is on same mentor
+            const mentorSchedList = await MentoringList.findOne({ "mentee.schedule._id": sameSched._id, _id: ses_id });
 
-            if (!list) return res.json({ msg: "Schedule not udpated to mentee!" });
+            // if(mentorSchedList._id.toString() === ses_id ) { // means they have the same mentor id
+            //     // determine if they are good to have same session time or not?
 
-            return res.json(list);
-        } )
+            //     return res.json({ msg: "schedule conflict!" });
+            // }
+            return res.json({ msg: "if samesched", mentorSchedList, sameSched })
+        }
+
+        return res.json({ sameSched })
+
+        // await Schedule({
+        //     mentee_id: mentee._id,
+        //     from,
+        //     to
+        // }).save( async (err, doc) => {
+        //     if( err ) return res.status(400).json({ success: false, error: err, msg: "Schedule not added!" })
+
+        //     const list = await MentoringList.findOneAndUpdate({ _id: id, "mentee._id": mentee._id }, { $push: { "mentee.$.schedule": [{ _id: doc._id }] } }, {new: true, upsert: true})
+
+        //     if (!list) return res.json({ msg: "Schedule not udpated to mentee!" });
+
+        //     return res.json(list);
+        // } )
 
         // if (!sched) return res.json({ msg: "Schedule not set!" });
         

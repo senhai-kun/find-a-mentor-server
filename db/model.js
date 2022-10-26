@@ -99,6 +99,10 @@ const scheduleSchema = new Schema({
         type: Schema.Types.ObjectId,
         default: mongoose.Types.ObjectId,
     },
+    mentee_id: {
+        type: Schema.Types.ObjectId,
+        ref: "mentee"
+    },
     from: {
         type: String,
         required: true

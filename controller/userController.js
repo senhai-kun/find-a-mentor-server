@@ -7,15 +7,17 @@ const sendMail = require("../sendmail/sendMail");
 
 const find = async (req, res) => {
     
-    let result = await sendMail({ subject: "Mentor: Senpai Kouhai", from: "Find A Mentor <asdsenpaikouhai04@gmail.com>", cc: "senpaikouhai04@gmail.com", to: "agustinagapito09@gmail.com" })
+    // let result = await sendMail({ subject: "Mentor: Senpai Kouhai", from: "Find A Mentor <asdsenpaikouhai04@gmail.com>", cc: "senpaikouhai04@gmail.com", to: "agustinagapito09@gmail.com" })
 
-    return res.json({ result })
+    // return res.json({ result })
 
     // const users = await UsersAccount.find().select("+password");
     // const mentor = await Mentor.find();
     // const mentee = await Mentee.find();
     // const mentoringList = await MentoringList.find();
-    // const schedule = await Schedule.find();
+    const schedule = await MentoringList.findOne({ "mentee.schedule._id": "6357dca3615c61a089d39e29" });
+
+    return res.json(schedule);
 
     // return res.json({ users, mentor, mentee, mentoringList, schedule })
 
@@ -220,7 +222,11 @@ const getUserProfile = async (req, res) => {
         if (ismentor) {
             const user = await Mentor.findOne({ ref_id });
 
-            const mentor = await MentoringList.findOne({ _id: user._id }).populate("_id").populate("mentee._id").populate("mentee.schedule._id");
+            const mentor = await MentoringList
+            .findOne({ _id: user._id })
+            .populate("_id")
+            .populate("mentee._id")
+            .populate("mentee.schedule._id");
             
             return res.json({ ismentor, mentor });
         } else {
