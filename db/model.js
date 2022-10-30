@@ -84,6 +84,10 @@ const mentoringListSchema = new Schema({
                 ref: 'mentee',
                 required: true
             },
+            accepted: {
+                type: Boolean,
+                default: false
+            },
             schedule: [{
                 _id: {
                     type: Schema.Types.ObjectId,
@@ -98,10 +102,6 @@ const scheduleSchema = new Schema({
     _id: {
         type: Schema.Types.ObjectId,
         default: mongoose.Types.ObjectId,
-    },
-    mentee_id: {
-        type: Schema.Types.ObjectId,
-        ref: "mentee"
     },
     from: {
         type: String,
