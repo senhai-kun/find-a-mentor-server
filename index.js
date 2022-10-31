@@ -65,13 +65,6 @@ app.use(
 // user api
 app.use(userRoutes);
 
-// socket io
-//const server = http.createServer(app);
-//const socketInit = require("./chat/socketInit")(server)
-
-// initialize socket io
-// app.use(socketInit);
-
 // server
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

@@ -84,9 +84,14 @@ const mentoringListSchema = new Schema({
                 ref: 'mentee',
                 required: true
             },
-            accepted: {
-                type: Boolean,
-                default: false
+            status: {
+                accepted: {
+                    type: Boolean,
+                    default: false
+                },
+                message: {
+                    type: String,
+                }
             },
             schedule: [{
                 _id: {

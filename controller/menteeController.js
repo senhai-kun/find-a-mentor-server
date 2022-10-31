@@ -17,7 +17,7 @@ const getMentor = async (req, res) => {
 }
 
 const enrollMentee = async (req, res) => {
-    const { ref_id } = req.body;
+    const { ref_id, message } = req.body;
     const mentee_id = req.session.userID;
 
     try {
@@ -30,7 +30,7 @@ const enrollMentee = async (req, res) => {
         // const existsOnList = await MentoringList.findOne({ _id: mentor._id });
 
         // if ( existsOnList ) {
-            const list = await MentoringList.findOneAndUpdate({ _id: mentor._id }, { $push: { mentee: [{ _id: mentee_id }] } }, { new: true, upsert: true });
+            const list = await MentoringList.findOneAndUpdate({ _id: mentor._id }, { $push: { mentee: [{ _id: mentee_id, "status.message": message }] } }, { new: true, upsert: true });
 
         //     return res.json({ list });
         // } else {
