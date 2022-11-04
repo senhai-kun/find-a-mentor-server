@@ -3,10 +3,10 @@ const mongoose = require("mongoose");
 let cacheConn = null;
 
 const dbConn = async () => {
-    if (cacheConn) {
-        console.log("cacheConn...");
-        return cacheConn;
-    }
+    // if (cacheConn) {
+    //     console.log("cacheConn...");
+    //     return cacheConn;
+    // }
 
     console.log("Attempting to connect database...");
 
@@ -20,7 +20,7 @@ const dbConn = async () => {
         .connect(process.env.DB_CON, db_opt)
         .then((mongoose) => {
             console.log("Connection established to database");
-            return mongoose.connection;
+            return mongoose.connection.getClient();
         })
         .catch((e) => {
             console.log("failed connecting to database", e);
