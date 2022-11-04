@@ -59,6 +59,23 @@ const getMentorProfile = async (req, res) => {
     }
 }
 
+const acceptMentee = async (req, res) => {
+    const { mentee_id, mode } = req.body;
+
+    const mentor_id = req.session.userID;
+
+    try {
+        await dbConn();
+        console.log(mentee_id);
+
+        const mentee = await MentoringList.findOneAndUpdate({ _id: mentor_id, "mentee._id": mentee_id }, { $set: { 'mentee.$.status.mode': mode } }, { new: true });
+        return res.json({ success: true, msg: "Mentee accepted!" });
+
+    } catch (error) {
+        return res.status(500).json({ success: false, msg: "Mentee not accepted!", error: "Server Error", error })
+    }
+}
+
 const getSchedule = async (req, res) => {
     const id = req.session.userID;
     console.log("asd")
@@ -115,7 +132,7 @@ const addSchedule = async (req, res) => {
         }).save( async (err, doc) => {
             if( err ) return res.status(400).json({ success: false, error: err, msg: "Schedule not added!" })
 
-            const list = await MentoringList.findOneAndUpdate({ _id: id, "mentee._id": mentee._id }, { $push: { "mentee.$.schedule": [{ _id: doc._id }] } }, {new: true, upsert: true})
+            const list = await MentoringList.findOneAndUpdate({ _id: ses_id, "mentee._id": mentee._id }, { $push: { "mentee.$.schedule": [{ _id: doc._id }] } }, {new: true, upsert: true})
 
             if (!list) return res.json({ msg: "Schedule not udpated to mentee!" });
 
@@ -163,6 +180,20 @@ const updateMentorProfile = async (req, res) => {
     }
 }
 
+const cancelSchedule = async (req, res) => {
+    const { sched_id } = req.params;
+    try {
+        await dbConn();
+
+        const sched = await Schedule.findOneAndUpdate({ _id: sched_id }, { $set: { cancel: true } }, { new: true });
+
+        return res.json({ success: true, sched, msg: "Schedule Cancelled!" })
+
+    } catch (error) {
+        return res.status(500).json({ msg: "schedule not updated to cancelled", error });
+    }
+}
+
 const doneSchedule = async (req, res) => {
     const { sched_id } = req.params;
 
@@ -174,10 +205,10 @@ const doneSchedule = async (req, res) => {
         return res.json({ success: true, sched, msg: "Schedule Done!" })
 
     } catch (error) {
-        return res.status(500).json({ error: "schedule not updated to done", error });
+        return res.status(500).json({ msg: "schedule not updated to done", error });
     }
 
 }
 
 
-module.exports = { getAllMentors, getMentorProfile, updateMentorProfile, getSchedule, addSchedule, doneSchedule, searchMentor }
+module.exports = { getAllMentors, getMentorProfile, updateMentorProfile, getSchedule, addSchedule, cancelSchedule, doneSchedule, searchMentor, acceptMentee }

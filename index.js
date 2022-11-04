@@ -3,6 +3,8 @@ const app = express();
 const env = require("dotenv");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
+const menteeRoutes = require("./routes/mentee");
+const mentorRoutes = require("./routes/mentor")
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
 const MongoStore = require("connect-mongo");
@@ -64,6 +66,8 @@ app.use(
 
 // user api
 app.use(userRoutes);
+app.use(menteeRoutes);
+app.use(mentorRoutes);
 
 // server
 app.listen(port, () => {

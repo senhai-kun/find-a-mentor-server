@@ -1,17 +1,63 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-module.exports = async ({ cc, from, to, subject, text }) => {
+module.exports.sendMail = async ({ to, subject, text }) => {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: process.env.EMAIL,
-          pass: process.env.APP_PASS,
+            user: process.env.EMAIL,
+            pass: process.env.APP_PASS,
+        },
+        port: 465,
+        secure: true,
+        host: 'smtp.gmail.com'
+    });
+
+    try {
+        let data = await transporter.sendMail({
+            from: `Find A Mentor <findamentor123@gmail.com>`,
+            to: to,
+            subject: subject,
+            text: text,
+            html: `
+          <div
+            class="container"
+            style="max-width: 90%; margin: auto; padding-top: 20px"
+          >
+            <h2>Find A Mentor: PASSWORD RESET</h2>
+        
+            <p style="margin-bottom: 30px;">You recently requested to reset your account password.</p>
+            <h1> <a href="${text}" target="_blank">Reset Password</a>  </h1>
+            
+          </div>
+          `,
+        });
+
+        return {
+            success: true,
+            data,
+        };
+    } catch (error) {
+        console.error(error);
+
+        return {
+            success: false,
+            error,
+            msg: "Error sending email...: " + error,
+        };
+    }
+};
+
+module.exports.sendMentorEmail = async ({ cc, from, to, subject, text }) => {
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: process.env.EMAIL,
+            pass: process.env.APP_PASS,
         },
     });
 
     try {
-        
         let data = await transporter.sendMail({
             from: from,
             to: to,
@@ -71,18 +117,21 @@ ${text}
     </table>
   </body>
 </html>
-            `
-        })
+            `,
+        });
 
         return {
             success: true,
             data,
-            msg: `Email successfully sent to ${to.map( i => i).join(", ")}`
+            msg: `Email successfully sent to ${to.map((i) => i).join(", ")}`,
         };
-
     } catch (error) {
         console.error(error);
 
-        return { success: false, error, msg: "Error sending email...: " + error };
+        return {
+            success: false,
+            error,
+            msg: "Error sending email...: " + error,
+        };
     }
-}
+};

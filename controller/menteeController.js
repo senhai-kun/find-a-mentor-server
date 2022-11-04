@@ -30,8 +30,8 @@ const enrollMentee = async (req, res) => {
         // const existsOnList = await MentoringList.findOne({ _id: mentor._id });
 
         // if ( existsOnList ) {
-            const list = await MentoringList.findOneAndUpdate({ _id: mentor._id }, { $push: { mentee: [{ _id: mentee_id, "status.message": message }] } }, { new: true, upsert: true });
-
+            const list = await MentoringList.findOneAndUpdate({ _id: mentor._id }, { $push: { mentee: [{ _id: mentee_id,  "status.message": message }] }, }, { new: true });
+            // const status = await MentoringList.findOneAndUpdate({ _id: mentor._id, "mentee._id": mentee_id }, { $addToSet: { mentee: [{ "status.message": message }] } }, { new: true });
         //     return res.json({ list });
         // } else {
             // console.log("not exists", mentee_id);

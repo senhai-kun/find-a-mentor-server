@@ -26,6 +26,8 @@ const menteeSchema = new Schema({
     firstname: { type: String },
     lastname: { type: String },
     email: { type: String},
+    phone: { type: String },
+    birthday: { type: String },
     img: { type: String, default: "no_image" },
     ref_id: { type: String },
     coordinates: { 
@@ -43,6 +45,8 @@ const mentorSchema = new Schema({
     firstname: { type: String },
     lastname: { type: String },
     email: { type: String},
+    phone: { type: String },
+    birthday: { type: String },
     img: { type: String, default: "no_image" },
     details: { 
         skills: { type: Array },
@@ -79,20 +83,22 @@ const mentoringListSchema = new Schema({
     },
     mentee: [
         { 
+            status: {
+                mode: {
+                    type: String,
+                    default: "pending"
+                },
+                message: {
+                    type: String,
+                    default: ""
+                }
+            },
             _id: {
                 type: Schema.Types.ObjectId,
                 ref: 'mentee',
                 required: true
             },
-            status: {
-                accepted: {
-                    type: Boolean,
-                    default: false
-                },
-                message: {
-                    type: String,
-                }
-            },
+            
             schedule: [{
                 _id: {
                     type: Schema.Types.ObjectId,
@@ -121,6 +127,10 @@ const scheduleSchema = new Schema({
         default: false
     },
     done: {
+        type: Boolean,
+        default: false
+    },
+    cancel: {
         type: Boolean,
         default: false
     },

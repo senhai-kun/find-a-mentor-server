@@ -48,7 +48,7 @@ const loginController = async (req, res) => {
 };
 
 const registerController = async (req, res) => {
-    const { firstname, lastname, email, password, ismentor } = req.body;
+    const { firstname, lastname, email, phone, birthday, password, ismentor } = req.body;
 
     await dbConn(); // initialize db connection
 
@@ -73,6 +73,8 @@ const registerController = async (req, res) => {
                 firstname,
                 lastname,
                 email,
+                phone,
+                birthday,
                 ref_id
             }).save( async (err, result) => {
                 if (!err) {
@@ -100,6 +102,8 @@ const registerController = async (req, res) => {
                 firstname,
                 lastname,
                 email,
+                phone,
+                birthday,
                 ref_id
             }).save( async (err, result) => {
                 if (!err) {
