@@ -298,7 +298,7 @@ const resetPasswordUrl = async (req, res) => {
 
         const user = await UsersAccount.findOne({ email });
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' } )
+        const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' } )
 
         // generate url for reset password
         const url = `${process.env.ORIGIN}/account/reset?token=${token}`;
@@ -318,7 +318,7 @@ const verifyUrlReset = async (req, res) => {
 
     try {
         // verify token
-        jwt.verify(token, process.env.JWT_SECRET, (err, decode) => {
+        await jwt.verify(token, process.env.JWT_SECRET, async (err, decode) => {
             // redirection error
             if(err) {
                 if (err?.message === "jwt expired") return res.json({ success: false, msg: "Token has expired!" });
@@ -326,7 +326,7 @@ const verifyUrlReset = async (req, res) => {
             }
 
             // token verified generate new token to reset expiry
-            const resetToken = jwt.sign({ id: decode.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            const resetToken = await jwt.sign({ id: decode.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
             return res.json({ success: true, msg: "Token verified!", resetToken });
         });
@@ -342,7 +342,7 @@ const resetPassword = async (req, res) => {
     try {
         await dbConn();
 
-        jwt.verify(resetToken,process.env.JWT_SECRET, async (err, decode) => {
+        await jwt.verify(resetToken,process.env.JWT_SECRET, async (err, decode) => {
             // redirection error
             if(err) {
                 if (err?.message === "jwt expired") return res.json({ success: false, msg: "Token has expired!" });
