@@ -20,7 +20,7 @@ const dbConn = async () => {
         .connect(process.env.DB_CON, db_opt)
         .then((mongoose) => {
             console.log("Connection established to database");
-            return mongoose.connection.getClient();
+            return mongoose.connection;
         })
         .catch((e) => {
             console.log("failed connecting to database", e);
