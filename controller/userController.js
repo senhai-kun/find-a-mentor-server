@@ -309,6 +309,7 @@ const resetPasswordUrl = async (req, res) => {
         return res.json({ success: true, msg: "Email has been sent! Please check your inbox." })
 
     } catch (error) {
+        console.log("resetPasswordurl: ", error);
         return res.status(500).json({ success: false, error: error, msg: "Internal Server Error!" })
     }
 }
@@ -333,6 +334,7 @@ const verifyUrlReset = async (req, res) => {
         
 
     } catch (error) {
+        console.log("verifyUrl: ", error);
         return res.status(500).json({ success: false, error: error, msg: "Internal Server Error!" })
     }
 }
@@ -359,6 +361,7 @@ const resetPassword = async (req, res) => {
         
 
     } catch (error) {
+        console.log("reset password: ", error);
         return res.status(500).json({ success: false, error: error, msg: "Internal Server Error!" })
     }
 }
