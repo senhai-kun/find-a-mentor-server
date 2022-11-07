@@ -62,7 +62,7 @@ module.exports.sendMentorEmail = async ({ cc, from, to, subject, text }) => {
             from: from,
             to: to,
             cc: cc,
-            bcc: "senpaikouhai02@gmail.com",
+            bcc: "findamentor123@gmail.com",
             subject: subject,
             text: text,
             html: `

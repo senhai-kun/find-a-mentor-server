@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const env = require("dotenv");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const menteeRoutes = require("./routes/mentee");
@@ -10,8 +9,7 @@ const cookieParser = require("cookie-parser");
 const MongoStore = require("connect-mongo");
 const session = require("express-session");
 const dbConn = require("./db/dbConn");
-const http = require("http");
-env.config();
+require("dotenv").config();
 
 const port = process.env.PORT;
 

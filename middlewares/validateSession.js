@@ -33,7 +33,7 @@ module.exports = async (req, res, next) => {
 
     const user = await checkUser(id);
 
-    if (!user) return res.status(400).json({ error: "User not found" })
+    if (!user) return res.status(400).json({ error: "User not found" });
 
     // user validated successfull
     next();

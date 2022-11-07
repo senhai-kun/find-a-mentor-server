@@ -46,12 +46,7 @@ router.get("/account/ses", validateSession, sessionController);
 
 router.post("/account/login", loginSanitizer, sanitizerResult, loginController);
 
-router.post(
-    "/account/register",
-    registerSanitizer,
-    sanitizerResult,
-    registerController
-);
+router.post("/account/register", registerSanitizer, sanitizerResult, registerController);
 
 router.get(
     "/account/logout",

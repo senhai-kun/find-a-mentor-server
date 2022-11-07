@@ -29,8 +29,12 @@ const searchMentor = async (req, res) => {
                 { "firstname": { $regex: query, $options: "i" } }, 
                 { "lastname": { $regex: query, $options: "i" } }, 
                 { "profession": { $regex: query, $options: "i" } }, 
-                { "details.skills": { $regex: query, $options: "i" } }
-            ] }).sort({ "details.rating.rate": -1 })
+                { "details.skills": { $regex: query, $options: "i" } },
+                { "coordinates.address": { $regex: query, $options: "i" } },
+            ] , 
+            "profession": { $exists: true },
+            "details.about": { $exists: true }
+        }).sort({ "details.rating.rate": -1 })
 
         return res.json({mentors})
 
@@ -56,6 +60,34 @@ const getMentorProfile = async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({ success: false, msg: "user not foundasd", error: "Server Error", error })
+    }
+}
+
+
+const updateMentorProfile = async (req, res) => {  
+    const { profession, skills, about } = req.body;
+
+    try {
+        await dbConn();
+
+        const id = req.session.userID;
+        
+        console.log("ismentor: ", id);
+        const ismentor = await Mentor.findOne({ _id: id });
+        console.log("await mentor: ", ismentor)
+
+        if ( !ismentor ) return res.status(404).json({ invalid: "User is not a mentor!" });
+
+        const user = await Mentor.findOneAndUpdate({ _id: id }, { $set: { profession, details: { skills, about }} }, { new: true });
+
+        // if ( err ) {
+        //     return res.status(400).json({ error: err })
+        // }
+
+        return res.json({ success: true, user });
+
+    } catch (error) {
+        return res.status(500).json({ error: "Server error from controller" });
     }
 }
 
@@ -153,35 +185,9 @@ const addSchedule = async (req, res) => {
     }
 }
 
-const updateMentorProfile = async (req, res) => {  
-    const { profession, skills, about } = req.body;
-
-    try {
-        await dbConn();
-
-        const id = req.session.userID;
-        
-        console.log("ismentor: ", id);
-        const ismentor = await Mentor.findOne({ _id: id });
-        console.log("await mentor: ", ismentor)
-
-        if ( !ismentor ) return res.status(404).json({ invalid: "User is not a mentor!" });
-
-        const user = await Mentor.findOneAndUpdate({ _id: id }, { $set: { profession, details: { skills, about }} }, { new: true });
-
-        // if ( err ) {
-        //     return res.status(400).json({ error: err })
-        // }
-
-        return res.json({ success: true, user });
-
-    } catch (error) {
-        return res.status(500).json({ error: "Server error from controller" });
-    }
-}
-
 const cancelSchedule = async (req, res) => {
     const { sched_id } = req.params;
+    
     try {
         await dbConn();
 
