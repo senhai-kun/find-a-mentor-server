@@ -98,7 +98,6 @@ const mentoringListSchema = new Schema({
                 ref: 'mentee',
                 required: true
             },
-            
             schedule: [{
                 _id: {
                     type: Schema.Types.ObjectId,
@@ -167,27 +166,32 @@ const chatRoomSchema = new Schema({
 }, { timestamps: true })
 
 const messageSchema = new Schema({
-    _id: {
-        type: Schema.Types.ObjectId,
-        default: mongoose.Types.ObjectId,
-    },
-    message: {
-        type: String,
-        required: true
-    },
-    sender: {
-        type: Schema.Types.ObjectId,
-        ref: "mentee"
-    },
-    to: {
+    room_id: {
         type: String
-    }
-}, { timestamps: true })
+    },
+    messages: [{
+        message: {
+            type: String,
+            required: true
+        },
+        sender: {
+            type: String
+        },
+        img: {
+            type: String
+        },
+        date: {
+            type: String
+        },
+    }]
+    
+})
 
 const UsersAccount = mongoose.model("users_account", usersAccount, "users_account");
 const Mentee = mongoose.model("mentee", menteeSchema, "mentee");
 const Mentor = mongoose.model("mentor", mentorSchema, "mentor");
 const MentoringList = mongoose.model("mentoring_list", mentoringListSchema, "mentoring_list");
 const Schedule = mongoose.model("schedule", scheduleSchema, "schedule");
+const Message = mongoose.model("message", messageSchema, "message")
 
-module.exports = { Mentee, Mentor, UsersAccount, MentoringList, Schedule };
+module.exports = { Mentee, Mentor, UsersAccount, MentoringList, Schedule, Message };

@@ -4,7 +4,7 @@ const http = require("http");
 const app = express();
 require("dotenv").config();
 
-const port = process.env.PORT || 5001;
+const port = 5001;
 const server = http.createServer(app);
 
 const io = socketIO(server, {
@@ -24,5 +24,5 @@ const connectionHandler = require("./connectionHandler")(io);
 io.on("connection", connectionHandler);
 
 server.listen( port, () => {
-    console.log(`Running socket in port: ${port}`);
+    console.log(`Running socket on port: ${port}`);
 } )

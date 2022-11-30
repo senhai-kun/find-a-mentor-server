@@ -5,8 +5,10 @@ const { UsersAccount, Mentee, Mentor, MentoringList, Schedule } = require("../db
 const mongoose = require("mongoose");
 const { sendMail, sendMentorEmail } = require("../sendmail/sendMail");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const axios = require("axios");
 require("dotenv").config();
+
 
 
 const find = async (req, res) => {
@@ -24,7 +26,7 @@ const find = async (req, res) => {
 
     const mentor = await MentoringList.findOne({ _id: "633d4df64f80672a430adf4d" })
     .populate({path: "_id",  match: { "mentee.status.accepted": true } })
-    .populate({dpath: "mentee._id"})
+    .populate({path: "mentee._id"})
     .populate({path: "mentee.schedule._id"});
 
     return res.json(mentor);
@@ -251,7 +253,7 @@ const getUserProfile = async (req, res) => {
         } else {
             const user = await Mentee.findOne({ ref_id });
 
-            const mentee = await MentoringList.find({ "mentee._id": user._id }).populate("_id").populate("mentee._id").populate("mentee.schedule._id");
+            const mentee = await MentoringList.find({ "mentee._id": id }).populate("_id").populate("mentee._id").populate("mentee.schedule._id");
             // console.log("mentee", mentee)
 
             return res.json({ ismentor, mentee });
@@ -364,7 +366,36 @@ const resetPassword = async (req, res) => {
 
     } catch (error) {
         console.log("reset password: ", error);
-        return res.status(500).json({ success: false, error: error, msg: "Internal Server Error!" })
+        return res.status(500).json({ success: false, error: error, msg: "Internal Server Error!" });
+    }
+}
+
+const searchLocation = async (req, res) => {
+    const { addressQuery } = req.query;
+
+    try {
+        const baseUrl = "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&"
+        const address = `singleLine=${addressQuery}&`
+        const token = `token=${process.env.GEO_TOKEN}`
+
+        const locAddress = await axios.get(baseUrl + address + token);
+
+        let locations = locAddress.data.candidates.map( (i, index) => 
+            { return { 
+                index,
+                address: i.address, 
+                coordinates: {
+                    lng: i.location.x,
+                    lat: i.location.y
+                }
+            }}
+        )
+
+        return res.json({ success: true, locations })
+        
+    } catch (error) {
+        console.log("Location: ", error);
+        return res.status(500).json({ success: false, error: error, msg: "Internal Server Error!" });
     }
 }
 
@@ -378,5 +409,6 @@ module.exports = {
     changePassword,
     resetPasswordUrl,
     verifyUrlReset,
-    resetPassword
+    resetPassword,
+    searchLocation
 };

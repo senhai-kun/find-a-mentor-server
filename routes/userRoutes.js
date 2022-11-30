@@ -1,36 +1,19 @@
 const router = require("express").Router();
 const validateSession = require("../middlewares/validateSession");
-const {
-    loginSanitizer,
-    registerSanitizer,
-    sanitizerResult,
-} = require("../middlewares/sanitizeInput");
-const {
-    loginController,
-    registerController,
-    logoutController,
-} = require("../controller/loginController");
-const {
-    sessionController,
-    profileImgController,
-    find,
-    updateUserProfile,
-    getUserProfile,
-    sendEmail,
-    changePassword,
-    resetPasswordUrl,
-    resetPassword,
-    verifyUrlReset,
-} = require("../controller/userController");
+const { loginSanitizer, registerSanitizer, sanitizerResult,} = require("../middlewares/sanitizeInput");
+const { loginController, registerController, logoutController,} = require("../controller/loginController");
+const { sessionController, profileImgController, find, updateUserProfile, getUserProfile, sendEmail, changePassword, resetPasswordUrl, resetPassword, verifyUrlReset, searchLocation } = require("../controller/userController");
 
 // routes
 router.get("/", (req, res) => {
     return res.send({ msg: "Server is running..." });
 });
 
+router.get("/location/search", searchLocation);
+
 router.get("/find", find);
 
-router.post("/email", sendEmail);
+router.post("/email", validateSession, sendEmail);
 
 router.post("/user/:ref_id", validateSession, getUserProfile);
 
