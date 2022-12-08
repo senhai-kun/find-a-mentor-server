@@ -1,7 +1,6 @@
 const dbConn = require("../db/dbConn");
 const { UsersAccount, Mentee, Mentor } = require("../db/model");
 const bcrypt = require("bcrypt");
-const checkUser = require("../helper/checkUser");
 const shortid = require("shortid");
 
 const loginController = async (req, res) => {

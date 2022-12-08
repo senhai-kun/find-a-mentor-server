@@ -33,14 +33,12 @@ router.post("/account/register", registerSanitizer, sanitizerResult, registerCon
 
 router.get(
     "/account/logout",
-    (req, res, next) => {
-        // res.clearCookie("fam-ses", { path: '/' });
+    (req, res) => {
         res.clearCookie("fam-ses");
         console.log("logging out");
         req.session.destroy((err) => {
             console.log("logout: ", err);
         });
-        // next();
         return res.json({ logout: "true" });
     },
     logoutController

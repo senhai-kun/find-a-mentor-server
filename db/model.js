@@ -145,26 +145,6 @@ const scheduleSchema = new Schema({
     }
 })
 
-const chatRoomSchema = new Schema({
-    _id: {
-        type: Schema.Types.ObjectId,
-        default: mongoose.Types.ObjectId,
-    },
-    mentor: {
-        type: Schema.Types.ObjectId,
-        ref: "mentor"
-    },
-    members: [{
-        _id: {
-            type: Schema.Types.ObjectId,
-            ref: "mentee"
-        }
-    }],
-    groupChatName: {
-        type: String
-    }
-}, { timestamps: true })
-
 const messageSchema = new Schema({
     room_id: {
         type: String

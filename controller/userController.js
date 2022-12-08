@@ -1,51 +1,19 @@
 const dbConn = require("../db/dbConn");
-const checkUser = require("../helper/checkUser");
 const { cloudinary } = require("../helper/cloudinary");
-const { UsersAccount, Mentee, Mentor, MentoringList, Schedule } = require("../db/model");
-const mongoose = require("mongoose");
+const { UsersAccount, Mentee, Mentor, MentoringList } = require("../db/model");
 const { sendMail, sendMentorEmail } = require("../sendmail/sendMail");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 require("dotenv").config();
 
-
-
 const find = async (req, res) => {
-    
-    // let result = await sendMail({ subject: "Mentor: Senpai Kouhai", from: "Find A Mentor <asdsenpaikouhai04@gmail.com>", cc: "senpaikouhai04@gmail.com", to: "agustinagapito09@gmail.com" })
-
-    // return res.json({ result })
-
-    // const users = await UsersAccount.find().select("+password");
-    // const mentor = await Mentor.find();
-    // const mentee = await Mentee.find();
-    // const mentoringList = await MentoringList.find();
-    // const schedule = await MentoringList.findOne({ "mentee.schedule._id": "6357dca3615c61a089d39e29" });
-
-
     const mentor = await MentoringList.findOne({ _id: "633d4df64f80672a430adf4d" })
     .populate({path: "_id",  match: { "mentee.status.accepted": true } })
     .populate({path: "mentee._id"})
     .populate({path: "mentee.schedule._id"});
 
-    return res.json(mentor);
-
-    // return res.json({ users, mentor, mentee, mentoringList, schedule })
-
-    // try {
-        // await dbConn();
-
-        // const text = "thre";
-
-        // const mentor = await Mentor.find({ $or: [{ "firstname": { $regex: text } }, { "lastname": { $regex: text } }, { "profession": { $regex: text } }] })
-
-        // return res.json({mentor})
-        
-    // } catch (error) {
-    //     return res.json({ error })
-    // }
-
+    return res.json({mentor: [mentor]});
 }
 
 const sendEmail = async (req, res) => {
@@ -59,7 +27,6 @@ const sendEmail = async (req, res) => {
 const sessionController = async (req, res) => {
     try {
         await dbConn();
-
         const id = req.session.userID;
 
         console.log("session Controller: ",req.session.userID)
@@ -87,12 +54,9 @@ const sessionController = async (req, res) => {
 const profileImgController = async (req, res) => {
     const { img, ismentor } = req.body;
     const id = req.session.userID;
-
     console.log("Uploading ....");
-
     try {
         await dbConn();
-
         const upload = await cloudinary.uploader.upload(img, {
             upload_preset: "mentor",
             folder: `mentor/${id}`,
@@ -134,16 +98,6 @@ const profileImgController = async (req, res) => {
             return res.json({ success: true, user });
         }
 
-        // const user = await User.findByIdAndUpdate(
-        //     { _id: id },
-        //     {
-        //         $set: {
-        //             img: `https://res.cloudinary.com/find-a-mentor/v1/${upload.public_id}`,
-        //         },
-        //     },
-        //     { upsert: true, new: true }
-        // );
-
         return res.json({ success: true, user });
     } catch (e) {
         return res.json({ success: false, error: e });
@@ -154,7 +108,6 @@ const updateUserProfile = async (req, res) => {
     const { ismentor, img, firstname, lastname, location, ref_id, phone, birthday } = req.body;
     const id = req.session.userID;
     console.log( firstname, lastname, location, ref_id);
-
     try {
         await dbConn();
 
@@ -233,9 +186,7 @@ const updateUserProfile = async (req, res) => {
 const getUserProfile = async (req, res) => {
     const { ref_id } = req.params
     const { ismentor } = req.body;
-
     const id = req.session.userID;
-
     try {
         await dbConn();
 
@@ -267,9 +218,7 @@ const getUserProfile = async (req, res) => {
 
 const changePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
-
     const id = req.session.userID;
-
     try {
         await dbConn();
         const user = await UsersAccount.findOne({ _id: id }).select("+password");
@@ -296,7 +245,6 @@ const changePassword = async (req, res) => {
 
 const resetPasswordUrl = async (req, res) => {
     const { email } = req.body
-
     try {
         await dbConn();
 
@@ -320,7 +268,6 @@ const resetPasswordUrl = async (req, res) => {
 
 const verifyUrlReset = async (req, res) => {
     const { token } = req.body;
-
     try {
         // verify token
         await jwt.verify(token, `${process.env.JWT_SECRET}`, async (err, decode) => {
@@ -372,7 +319,6 @@ const resetPassword = async (req, res) => {
 
 const searchLocation = async (req, res) => {
     const { addressQuery } = req.query;
-
     try {
         const baseUrl = "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&"
         const address = `singleLine=${addressQuery}&`

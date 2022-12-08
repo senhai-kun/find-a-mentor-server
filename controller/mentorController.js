@@ -1,6 +1,5 @@
 const dbConn = require("../db/dbConn");
-const mongoose = require("mongoose");
-const { UsersAccount, Mentor, Schedule, MentoringList, Mentee } = require("../db/model");
+const { Mentor, Schedule, MentoringList, Mentee } = require("../db/model");
 
 const getAllMentors = async (req, res) => {
     try {
@@ -20,7 +19,6 @@ const getAllMentors = async (req, res) => {
 
 const searchMentor = async (req, res) => {
     const { query } = req.query
-    
     try {
         await dbConn();
 
@@ -45,14 +43,12 @@ const searchMentor = async (req, res) => {
 
 const getMentorProfile = async (req, res) => {
     const { ref_id } = req.params;
-
     try {
         await dbConn();
 
         const mentor = await Mentor.findOne({ 
             ref_id,
         }).select("-_id");
-
         // check if user is enrolled
         const enrolled = await MentoringList.findOne({ _id: mentor.id, "mentee._id": req.session.userID })
         
@@ -66,12 +62,9 @@ const getMentorProfile = async (req, res) => {
 
 const updateMentorProfile = async (req, res) => {  
     const { profession, skills, about } = req.body;
-
     try {
         await dbConn();
-
         const id = req.session.userID;
-        
         console.log("ismentor: ", id);
         const ismentor = await Mentor.findOne({ _id: id });
         console.log("await mentor: ", ismentor)
@@ -79,10 +72,6 @@ const updateMentorProfile = async (req, res) => {
         if ( !ismentor ) return res.status(404).json({ invalid: "User is not a mentor!" });
 
         const user = await Mentor.findOneAndUpdate({ _id: id }, { $set: { profession, details: { skills, about }} }, { new: true });
-
-        // if ( err ) {
-        //     return res.status(400).json({ error: err })
-        // }
 
         return res.json({ success: true, user });
 
@@ -93,9 +82,7 @@ const updateMentorProfile = async (req, res) => {
 
 const acceptMentee = async (req, res) => {
     const { mentee_id, mode } = req.body;
-
     const mentor_id = req.session.userID;
-
     try {
         await dbConn();
         console.log(mentee_id);
@@ -111,10 +98,8 @@ const acceptMentee = async (req, res) => {
 const getSchedule = async (req, res) => {
     const id = req.session.userID;
     console.log("asd")
-    // return res.json({ msg: "asd " });
-
     try {
-        // await dbConn();
+        await dbConn();
 
         const sched = await MentoringList.findOne({ "mentee._id": id }).populate("_id").populate("mentee._id").populate({ path: "mentee.schedule", options: { sort: {"mentee.schedule.approved": 1} } });
         
@@ -123,40 +108,16 @@ const getSchedule = async (req, res) => {
         return res.json(sched);
 
     } catch (error) {
-
         return res.status(500).json({ success: false, msg: "schedule not found", error: "Server Error", error });
     }
 }
 
 const addSchedule = async (req, res) => {
     const { from, to, email } = req.body;
-
     const ses_id = req.session.userID; // should be mentor id from session
-
     try {
         await dbConn();
-
         const mentee = await Mentee.findOne({ email });
-        // const mentor = await Mentor.findOne({ _id: id });
-        
-        // const sched = await Schedule.findOneAndUpdate({ mentee: mentee._id }, { $set: { from: from, to: to } }, { new: true, upsert: true });
-
-        // check if schedule overlaps
-        // const sameSched = await Schedule.findOne({ from, to });
-
-        // if(sameSched) {
-        //     // check if it is on same mentor
-        //     const mentorSchedList = await MentoringList.findOne({ "mentee.schedule._id": sameSched._id, _id: ses_id });
-
-        //     // if(mentorSchedList._id.toString() === ses_id ) { // means they have the same mentor id
-        //     //     // determine if they are good to have same session time or not?
-
-        //     //     return res.json({ msg: "schedule conflict!" });
-        //     // }
-        //     return res.json({ msg: "if samesched", mentorSchedList, sameSched })
-        // }
-
-        // return res.json({ sameSched })
 
         await Schedule({
             from,
@@ -170,15 +131,6 @@ const addSchedule = async (req, res) => {
 
             return res.json(list);
         } )
-
-        // if (!sched) return res.json({ msg: "Schedule not set!" });
-        
-        // const list = await MentoringList.findOneAndUpdate({ _id: id, "mentee._id": mentee._id }, { $push: { "mentee.$.schedule": [{ _id: sched._id }] } }, {new: true, upsert: true})
-        
-        // if (!list) return res.json({ msg: "Schedule not udpated to mentee!" });
-
-        // return res.json(list);
-
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, msg: "schedule not added", error: "Server Error", error })
@@ -202,7 +154,6 @@ const cancelSchedule = async (req, res) => {
 
 const doneSchedule = async (req, res) => {
     const { sched_id } = req.params;
-
     try {
         await dbConn();
 
@@ -215,6 +166,5 @@ const doneSchedule = async (req, res) => {
     }
 
 }
-
 
 module.exports = { getAllMentors, getMentorProfile, updateMentorProfile, getSchedule, addSchedule, cancelSchedule, doneSchedule, searchMentor, acceptMentee }

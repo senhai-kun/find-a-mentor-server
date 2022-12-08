@@ -1,6 +1,4 @@
-
 module.exports = (io) => {
-
     const { joinRoom, getMessages, sendMessage, reconnectToRoom,disconnectRoom } = require("./roomHandler")(io);
 
     const connectionHandler = (socket) => {
@@ -14,7 +12,5 @@ module.exports = (io) => {
 
         socket.on("disconnect", reason => disconnectRoom(socket, reason));
     }
-
     return connectionHandler;
-
 }
