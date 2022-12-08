@@ -44,7 +44,6 @@ module.exports = (io) => {
 
     return {
         joinRoom,
-        getMessages,
         sendMessage,
         reconnectToRoom,
         disconnectRoom

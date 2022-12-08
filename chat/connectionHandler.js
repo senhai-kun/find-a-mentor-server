@@ -1,5 +1,5 @@
 module.exports = (io) => {
-    const { joinRoom, getMessages, sendMessage, reconnectToRoom,disconnectRoom } = require("./roomHandler")(io);
+    const { joinRoom, sendMessage, reconnectToRoom,disconnectRoom } = require("./roomHandler")(io);
 
     const connectionHandler = (socket) => {
         socket.on("join_room", data => joinRoom(socket, data) );
