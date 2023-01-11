@@ -16,7 +16,7 @@ const port = process.env.PORT;
 // security
 app.disable("x-powered-by");
 app.use(cors({
-    origin: process.env.ORIGIN,
+    origin: [process.env.ORIGIN],
     credentials: true,
     methods: ["POST", "GET"],
 }));
